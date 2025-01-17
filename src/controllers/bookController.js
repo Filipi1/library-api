@@ -1,0 +1,56 @@
+import book from '../models/Book.js'
+import {ObjectId} from "bson";
+
+class BookController {
+    static async getBooks(req, res) {
+        const books = await book.find();
+        res.status(200).json(books);
+    }
+
+    static async getBookById(req, res) {
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(404).send("Book not found");
+            return
+        }
+
+        const bookEntity = await book.findById(req.params.id);
+        if (bookEntity == null) {
+            res.status(404).send("Book not found");
+            return
+        }
+        res.status(201).json(bookEntity);
+    }
+
+    static async createBook(req, res) {
+        await book.create({
+            title: req.body.title
+        })
+        const books = await book.find();
+        res.status(201).json(books);
+    }
+
+    static async updateBook(req, res) {
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(404).send("Book not found");
+            return
+        }
+        await book.updateOne({ _id: req.params.id }, req.body)
+        const bookEntity = await book.findById(req.params.id);
+        if (bookEntity == null) {
+            res.status(404).send("Book not found");
+            return
+        }
+        res.status(200).json(bookEntity);
+    }
+
+    static async deleteBook(req, res) {
+        if (!ObjectId.isValid(req.params.id)) {
+            res.status(404).send("Book not found");
+            return
+        }
+        await book.deleteOne({ _id: req.params.id })
+        res.status(200).json({ message: "Book deleted" });
+    }
+}
+
+export default BookController
