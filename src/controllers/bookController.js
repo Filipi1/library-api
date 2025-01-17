@@ -34,8 +34,7 @@ class BookController {
             res.status(404).send("Book not found");
             return
         }
-        await book.updateOne({ _id: req.params.id }, req.body)
-        const bookEntity = await book.findById(req.params.id);
+        const bookEntity = await book.findOneAndUpdate({ _id: req.params.id }, req.body)
         if (bookEntity == null) {
             res.status(404).send("Book not found");
             return
@@ -48,7 +47,7 @@ class BookController {
             res.status(404).send("Book not found");
             return
         }
-        await book.deleteOne({ _id: req.params.id })
+        await book.findByIdAndDelete({ _id: req.params.id })
         res.status(200).json({ message: "Book deleted" });
     }
 }
